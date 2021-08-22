@@ -1,19 +1,37 @@
 #!/bin/bash
 
+# iqis.sh v0.1
 # Author: Marat Farkhulin (https://iqis.ru) marat.farkhulin@gmail.com
 
-# TODO Write help page (argument -h)
-# ! problems/errors
-# ? questions/suggestions/variants
-# * done
+# TODO
+# * DONE Write help page (argument -h)
+# * DONE Check DRUSH enabled
+# * DONE Enable custom paths
+# * DONE Change Restore logic
 
 # * VARIABLES
-PROJECT='devoutfofame'
-DB_NAME="$(php -r 'include("sites/default/settings.php"); print $databases["default"]["default"]["database"];')"
-DB_USER="$(php -r 'include("sites/default/settings.php"); print $databases["default"]["default"]["username"];')"
-DB_PASS="$(php -r 'include("sites/default/settings.php"); print $databases["default"]["default"]["password"];')"
-DB_HOST="$(php -r 'include("sites/default/settings.php"); print $databases["default"]["default"]["host"];')"
-BCKP_SUFFIX="tools_backup"
+VERSION="v0.1"
+CURRENT=`pwd`
+PROJECT=`basename "$CURRENT"`
+BCKP_SUFFIX="backup"
+DRUPAL_PATH="./"
+SCRIPT_PATH="./"
+
+# * LOAD CUSTOM CONFIGURATION
+if test -f "iqis.conf"; then
+    source iqis.conf
+fi
+
+DB_NAME="$(php -r 'include("'${DRUPAL_PATH}'sites/default/settings.php"); print $databases["default"]["default"]["database"];')"
+DB_USER="$(php -r 'include("'${DRUPAL_PATH}'sites/default/settings.php"); print $databases["default"]["default"]["username"];')"
+DB_PASS="$(php -r 'include("'${DRUPAL_PATH}'sites/default/settings.php"); print $databases["default"]["default"]["password"];')"
+DB_HOST="$(php -r 'include("'${DRUPAL_PATH}'sites/default/settings.php"); print $databases["default"]["default"]["host"];')"
+
+# Testing - REMOVE!
+# echo ${DRUPAL_PATH}
+# echo ${DB_NAME}
+# echo ${PROJECT}
+# echo ${CURRENT}
 
 # * STYLES
 RED='\033[1;31m'
@@ -30,16 +48,21 @@ INVERSION='\033[7m'
 # * FUNCTIONS
 # Function: Display Help.
 usage() {
-    # echo "Usage: $0 [ -a ACTION (backup/restore/cleanup) ]" 1>&2
-    echo "IQIS Tools - is a script that simplifies the maintenance of your Drupal project."
     echo
-    echo "Syntax: $0 [-a|h|v|V]"
+    echo "IQIS.SH - is a script that simplifies the maintenance of your Drupal project."
+    echo
+    echo "Syntax: $0 [-a|h|V]"
     echo "options:"
     echo "a     action (backup/restore/cleanup)."
     echo "h     Print this Help."
-    echo "v     Verbose mode."
     echo "V     Print software version and exit."
     echo
+}
+
+# Function: Display Software Version.
+about() {
+    echo -e "IQIS.SH Version: ${VERSION}"
+    exit 1
 }
 
 # Function: Exit with error.
@@ -50,22 +73,29 @@ exit_abnormal() {
 
 # Function: Backup DB and files full backup.
 backup() {
+    # Run Drush Chache Rebuild if Drush installed.
+    cd ${DRUPAL_PATH}
+    if drush cr &> /dev/null
+    then
+        echo -e "${WHITE}Run Drush Chache Rebuild${NC}"
+        drush cr
+        echo -e ""
+    fi
+
     # Dump DB.
     echo -e "${WHITE}Create dump ${PROJECT} database${NC}"
 
     CURRENT_TIME=$( date '+%Y-%m-%d_%H-%M-%S' )
 
-    echo -e "\n${WHITE}${CURRENT_TIME}${NC}\n"
-
-    mysqldump -u ${DB_USER} -p${DB_PASS} -h ${DB_HOST} ${DB_NAME} | gzip > _${CURRENT_TIME}_${PROJECT}_db_${BCKP_SUFFIX}.tar.gz
+    mysqldump -u ${DB_USER} -p${DB_PASS} -h ${DB_HOST} ${DB_NAME} | gzip > ${SCRIPT_PATH}_${CURRENT_TIME}_${PROJECT}_db_${BCKP_SUFFIX}.tar.gz
 
     echo -e "${BG_WHITE}${BLACK} Done ${NC}"
 
     # Create file archive
     echo -e "${WHITE}Create ${PROJECT} files archive${NC}"
 
-    touch _${CURRENT_TIME}_${PROJECT}_files_${BCKP_SUFFIX}.tar.gz
-    tar --exclude=./*.gz --exclude=./*.zip -czf _${CURRENT_TIME}_${PROJECT}_files_${BCKP_SUFFIX}.tar.gz .
+    touch ${SCRIPT_PATH}_${CURRENT_TIME}_${PROJECT}_files_${BCKP_SUFFIX}.tar.gz
+    tar --exclude=./*.gz --exclude=./*.zip -czf ${SCRIPT_PATH}_${CURRENT_TIME}_${PROJECT}_files_${BCKP_SUFFIX}.tar.gz -C ${DRUPAL_PATH} .
 
     echo -e "${BG_WHITE}${BLACK} Done ${NC}"
 
@@ -74,39 +104,59 @@ backup() {
 
 # Function: Restore DB and full files.
 restore() {
-    echo -e "\nList available backups.\n"
+    echo -e "\n${WHITE}List available DATABASE backups:${NC}"
     echo -e "${RED}"
-    find -name '*_'${BCKP_SUFFIX}'.tar.gz'
-    echo -e "\n${NC}"
+    find ${SCRIPT_PATH} -maxdepth 1 -name '*_'${PROJECT}'_db_'${BCKP_SUFFIX}'.tar.gz' -printf "%f\n"
+    echo -e "${NC}"
 
-    read -p 'Databese backup (filename/no): ' database_name
+    # find ./ -maxdepth 1 -name '*_*_*_*.tar.gz' -printf "%f\n"
+
+    read -p 'Database backup (filename/no): ' database_name
     if [ ${database_name} = "no" ] ; then
         echo -e "\nNo database restored!\n"
     else
-        FILE=${database_name}
+        FILE=${SCRIPT_PATH}${database_name}
         if test -f "$FILE"; then
-            echo -e "\n${database_name} will be restored\n"
+            echo -e "\n${SCRIPT_PATH}${database_name} will be restored\n"
             mysql -u ${DB_USER} -p${DB_PASS} -h ${DB_HOST} ${DB_NAME} -e "DROP DATABASE ${DB_NAME}"
             mysql -u ${DB_USER} -p${DB_PASS} -h ${DB_HOST} -e "CREATE DATABASE ${DB_NAME}"
+            cd ${CURRENT}
+            cd ${SCRIPT_PATH}
             zcat ${database_name} | mysql -u ${DB_USER} -h ${DB_HOST} -p${DB_PASS} ${DB_NAME}
+            cd ${CURRENT}
             echo -e "\n${database_name} restored in ${DB_NAME}\n"
+
+            # Run Drush Chache Rebuild if Drush installed.
+            cd ${DRUPAL_PATH}
+            if drush cr &> /dev/null
+            then
+                echo -e "${WHITE}Run Drush Chache Rebuild${NC}"
+                drush cr
+                echo -e ""
+            fi
         else
             echo "$FILE no exists."
         fi
     fi
 
+    echo -e "\n${WHITE}List available FILES backups:${NC}"
+    echo -e "${RED}"
+    find ${SCRIPT_PATH} -maxdepth 1 -name '*_'${PROJECT}'_files_'${BCKP_SUFFIX}'.tar.gz' -printf "%f\n"
+    echo -e "${NC}"
+
     read -p 'Files backup (filename/no): ' files_backup_name
     if [ ${files_backup_name} = "no" ] ; then
         echo -e "\nNo files restored!\n"
-    else 
-        FILE=${files_backup_name}
+    else
+        FILE=${SCRIPT_PATH}${files_backup_name}
         if test -f "$FILE"; then
             echo -e "\n${files_backup_name} files archive will be restored\n"
-            # rm -v !(*.gz|*.sh)
-            chmod -R 777 sites
-            find ./ -type f -not -name '*.gz' -not -name '*.sh' -delete
-            find ./ -type d -exec rm -rf {} +
-            tar -xzf ${files_backup_name} -C ./
+            cd ${DRUPAL_PATH}
+            chmod -R 777 sites &> /dev/null
+            find ./ -type f -not -name '*.gz' -not -name '*.sh' -not -name '*.md' -not -name '*.conf' -delete
+            find ./ -type d -exec rm -rf {} + &> /dev/null
+            cd ${CURRENT}
+            tar -xzf ${SCRIPT_PATH}${files_backup_name} -C ${DRUPAL_PATH}
         else
             echo "$FILE no exists."
         fi
@@ -122,8 +172,8 @@ cleanup() {
         if echo "${cleaninterval}" | grep -qE '^[0-9]+$' ; then
             echo -e "will be remove all archives older than ${BOLD}${cleaninterval}${NC} minutes!"
             echo -e "${RED}"
-            find ./ -name '*_'${BCKP_SUFFIX}'.tar.gz' -mmin +${cleaninterval}
-            count=$(find ./ -name '*_'${BCKP_SUFFIX}'.tar.gz' -mmin +${cleaninterval} | wc -l)
+            find ${SCRIPT_PATH} -maxdepth 1 -name '*_'${PROJECT}'_*_'${BCKP_SUFFIX}'.tar.gz' -mmin +${cleaninterval}
+            count=$(find ${SCRIPT_PATH} -maxdepth 1 -name '*_'${PROJECT}'_*_'${BCKP_SUFFIX}'.tar.gz' -mmin +${cleaninterval} | wc -l)
             intervaltype="minutes"
             echo -e "\n${NC}find ${BOLD}${count}${NC} files."
             deleteArchives ${count} ${intervaltype} ${cleaninterval}
@@ -135,8 +185,8 @@ cleanup() {
         if echo "${cleaninterval}" | grep -qE '^[0-9]+$' ; then
             echo -e "will be remove all archives older than ${BOLD}${cleaninterval}${NC} days!"
             echo -e "${RED}"
-            find ./ -name '*_'${BCKP_SUFFIX}'.tar.gz' -mtime +${cleaninterval}
-            count=$(find ./ -name '*_'${BCKP_SUFFIX}'.tar.gz' -mtime +${cleaninterval} | wc -l)
+            find ${SCRIPT_PATH} -maxdepth 1 -name '*_'${PROJECT}'_*_'${BCKP_SUFFIX}'.tar.gz' -mtime +${cleaninterval}
+            count=$(find ${SCRIPT_PATH} -maxdepth 1 -name '*_'${PROJECT}'_*_'${BCKP_SUFFIX}'.tar.gz' -mtime +${cleaninterval} | wc -l)
             intervaltype="days"
             echo -e "\n${NC}find ${BOLD}${count}${NC} files."
             deleteArchives ${count} ${intervaltype} ${cleaninterval}
@@ -154,27 +204,27 @@ deleteArchives() {
         read -p 'Delete files? (yes/no) : ' deleteconfirm
         if [ ${deleteconfirm} = "yes" ] ; then
             if [ ${intervaltype} == "days" ] ; then
-                find ./ -name '*_'${BCKP_SUFFIX}'.tar.gz' -mtime +${cleaninterval} -delete
+                find ${SCRIPT_PATH} -maxdepth 1 -name '*_'${PROJECT}'_*_'${BCKP_SUFFIX}'.tar.gz' -mtime +${cleaninterval} -delete
                 echo -e "${BG_GREEN}${WHITE} Delete success! ${NC}"
             elif [ ${intervaltype} == "minutes" ] ; then
-                find ./ -name '*_'${BCKP_SUFFIX}'.tar.gz' -mmin +${cleaninterval} -delete
+                find ${SCRIPT_PATH} -maxdepth 1 -name '*_'${PROJECT}'_*_'${BCKP_SUFFIX}'.tar.gz' -mmin +${cleaninterval} -delete
                 echo -e "${BG_GREEN}${WHITE} Delete success! ${NC}"
             else
                 echo -e "${RED}${intervaltype} - Wrong intervaltype!${NC}"
             fi
-            exit_abnormal
+            # exit_abnormal
         else
             echo -e "Delete canceled."
-            exit_abnormal
+            # exit_abnormal
         fi
     else
         echo -e "Nothig to delete."
-        exit_abnormal
+        # exit_abnormal
     fi
 }
 
 # * LOGIC
-while getopts ":u:a:f:" options;
+while getopts ":a:hV" options;
 do
     case "${options}" in
         a)
@@ -192,6 +242,9 @@ do
             ;;
         h)
             exit_abnormal
+            ;;
+        V)
+            about
             ;;
         \?)
             echo "Invalid option: -${OPTARG}" >&2
