@@ -24,10 +24,23 @@ composer require drupal/module_name
 
 # IQIS.SH v0.1
 
-**iqis.sh** - contains instructions for creating a database dump and full file archive.
-This file is already included in composer (see scripts section in "pre-update-cmd" part), although it can be executed separately.
+**iqis.sh** - contains instructions for creating a database dump and full files archive.
 
-If you want set custom project name fnd backup suffix create **iqis.conf** file and set variables PROJECT and BCKP_SUFFIX, example:
+## If if you using Composer
+You may include in composer (scripts section in "pre-update-cmd" part), although it can be executed separately.
+
+Example:
+
+```json
+    "scripts": {
+        "pre-update-cmd": [
+            "bash iqis.sh -a backup",
+        ]
+    }
+```
+This will create full backup of your site (database and files) before composer will executed.
+
+If you want set custom project name and backup suffix create **iqis.conf** file and set variables PROJECT and BCKP_SUFFIX, also you may set custom DRUPAL_PATH and SCRIPT_PATH, example:
 
 ```bash
 # iqis.conf
@@ -44,7 +57,8 @@ If the script does not run, give execution permission to the file
 chmod ugo+x iqis.sh
 ```
 
-## USAGE IQIS.SH
+## USAGE IQIS.SH 
+
 ```bash
 iqis.sh [ -a ACTION (backup/restore/cleanup) ]
 ```
