@@ -1,0 +1,24 @@
+{
+    "name": "farkhulin/iqis_tools",
+    "type": "libraray",
+    "description": "IQIS tools for Drupal ^7 projects",
+    "keywords": ["drupal"],
+    "homepage": "https://iqis.ru",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Marat Farkhulin",
+            "email": "marat.farkhulin@gmail.com",
+            "homepage": "https://iqis.ru",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "composer/installers": "~1.0"
+    },
+    "extra": {
+        "installer-paths": {
+            "./": ["farkhulin/iqis_tools"]
+        }
+    }
+}

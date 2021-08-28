@@ -62,13 +62,13 @@ usage() {
 # Function: Display Software Version.
 about() {
     echo -e "IQIS.SH Version: ${VERSION}"
-    exit 1
+    exit 0
 }
 
 # Function: Exit with error.
 exit_abnormal() {
     usage
-    exit 1
+    exit 0
 }
 
 # Function: Backup DB and files full backup.
@@ -165,6 +165,39 @@ restore() {
     echo -e "\n${BG_GREEN}${WHITE} Restore complite! ${NC}\n"
 }
 
+# Function: Reset DB and files only iqis.conf and composer.json.
+reset() {
+    echo -e "\n${WHITE}Delete database and all files/directory except iqis.comf and composer.json.${NC}"
+
+    # Clean Database
+    mysql -u ${DB_USER} -p${DB_PASS} -h ${DB_HOST} ${DB_NAME} -e "DROP DATABASE ${DB_NAME}"
+    mysql -u ${DB_USER} -p${DB_PASS} -h ${DB_HOST} -e "CREATE DATABASE ${DB_NAME}"
+
+    # Clean files/directory
+    chmod -R 777 sites
+    find ./ -type f -not -name 'composer.json' -not -name '*.conf' -delete
+    find ./ -type d -exec rm -rf {} + &> /dev/null
+
+    echo -e "\n${BG_GREEN}${WHITE} Reset complite! ${NC}\n"
+}
+
+# Function: Initialisation, enable modules.
+init() {
+    echo -e "\n${WHITE}Initialisation, enable modules${NC}"
+
+    read -p 'Assembly type (basic|devel)? : ' assemblytype
+
+    if [ ${assemblytype} = "basic" ] ; then
+        drush en admin_toolbar, admin_toolbar_tools, module_filter, pathauto, ctools, token, webform, webform_ui, metatag, metatag_views, xmlsitemap, responsive_image, colorbox, imce, mailsystem, swiftmailer, scss_compiler
+    fi
+
+    if [ ${assemblytype} = "devel" ] ; then
+        drush en devel
+    fi
+
+    echo -e "\n${BG_GREEN}${WHITE} Initialisation complite! ${NC}\n"
+}
+
 # Function: Find old archives.
 cleanup() {
     if [ ${timeinterval} = "minutes" ] ; then
@@ -236,12 +269,16 @@ do
             elif [ ${OPTARG} = "cleanup" ] ; then
                 read -p 'Time interval (minutes/days)? : ' timeinterval
                 cleanup ${timeinterval}
+            elif [ ${OPTARG} = "reset" ] ; then
+                reset
+            elif [ ${OPTARG} = "init" ] ; then
+                init
             else
                 echo -e "${RED}${INVERSION} somthing wrong! ${NC}"
             fi
             ;;
         h)
-            exit_abnormal
+            usage
             ;;
         V)
             about
