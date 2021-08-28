@@ -1,6 +1,6 @@
 {
     "name": "farkhulin/iqis_tools",
-    "type": "libraray",
+    "type": "package",
     "description": "IQIS tools for Drupal ^7 projects",
     "keywords": ["drupal"],
     "homepage": "https://iqis.ru",
