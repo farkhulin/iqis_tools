@@ -13,9 +13,6 @@
             "role": "Developer"
         }
     ],
-    "require": {
-        "composer/installers": "~1.0"
-    },
     "scripts": {
         "post-update-cmd": [
             "echo 'HELLOW!'"
