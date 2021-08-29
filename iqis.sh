@@ -46,6 +46,14 @@ INVERSION='\033[7m'
 
 
 # * FUNCTIONS
+
+# Create alias for iqis.sh.
+selfinit() {
+    if ! grep -Fxq "alias iqis='bash ~/.composer/vendor/farkhulin/iqis_tools/iqis.sh'" ~/.profile
+    then
+        printf "%s\n" "alias iqis='bash ~/.composer/vendor/farkhulin/iqis_tools/iqis.sh'" >> ~/.profile
+    fi;
+}
 # Function: Display Help.
 usage() {
     echo
@@ -273,6 +281,8 @@ do
                 reset
             elif [ ${OPTARG} = "init" ] ; then
                 init
+            elif [ ${OPTARG} = "selfinit" ] ; then
+                selfinit
             else
                 echo -e "${RED}${INVERSION} somthing wrong! ${NC}"
             fi
