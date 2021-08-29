@@ -16,9 +16,9 @@
     "require": {
         "composer/installers": "~1.0"
     },
-    "extra": {
-        "installer-paths": {
-            "./": ["farkhulin/iqis_tools"]
-        }
+    "scripts": {
+        "post-update-cmd": [
+            "echo 'HELLOW!'"
+        ]
     }
 }
