@@ -12,13 +12,5 @@
             "homepage": "https://iqis.ru",
             "role": "Developer"
         }
-    ],
-    "scripts": {
-        "post-install-cmd": [
-            "echo 'HELLOW AM ALIVE!'"
-        ],
-        "post-update-cmd": [
-            "echo 'HELLOW!'"
-        ]
-    }
+    ]
 }
