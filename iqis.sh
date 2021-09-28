@@ -11,7 +11,7 @@
 # * DONE Change Restore logic
 
 # * VARIABLES
-VERSION="0.2.2"
+VERSION="0.2.3"
 CURRENT=`pwd`
 PROJECT=`basename "$CURRENT"`
 BCKP_SUFFIX="backup"
@@ -44,10 +44,22 @@ INVERSION='\033[7m'
 
 # Create alias for iqis.sh.
 selfinit() {
-    if ! grep -Fxq "alias iqis='bash ~/.composer/vendor/farkhulin/iqis_tools/iqis.sh'" ~/.profile
-    then
-        printf "%s\n" "alias iqis='bash ~/.composer/vendor/farkhulin/iqis_tools/iqis.sh'" >> ~/.profile
-    fi;
+    if [ -f ~/.profile ]; then
+        if ! grep -Fxq "alias iqis='bash ~/.composer/vendor/farkhulin/iqis_tools/iqis.sh'" ~/.profile
+        then
+            printf "%s\n" "alias iqis='bash ~/.composer/vendor/farkhulin/iqis_tools/iqis.sh'" >> ~/.profile
+        fi;
+    elif [ -f ~/.bash_profile ]; then
+        if ! grep -Fxq "alias iqis='bash ~/.composer/vendor/farkhulin/iqis_tools/iqis.sh'" ~/.bash_profile
+        then
+            printf "%s\n" "alias iqis='bash ~/.composer/vendor/farkhulin/iqis_tools/iqis.sh'" >> ~/.bash_profile
+        fi;
+    elif [ -f ~/.bashrc ]; then
+        if ! grep -Fxq "alias iqis='bash ~/.composer/vendor/farkhulin/iqis_tools/iqis.sh'" ~/.bashrc
+        then
+            printf "%s\n" "alias iqis='bash ~/.composer/vendor/farkhulin/iqis_tools/iqis.sh'" >> ~/.bashrc
+        fi;
+    fi
 }
 
 # Function: Display Help.
