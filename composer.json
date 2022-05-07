@@ -14,7 +14,7 @@
         }
     ],
     "scripts": {
-        "post-install-cmd": [
+        "post-package-install": [
             "chmod ugo+x  ~/.composer/vendor/farkhulin/iqis_tools/iqis.sh",
             "~/.composer/vendor/farkhulin/iqis_tools/iqis.sh -a selfinit"
         ]
