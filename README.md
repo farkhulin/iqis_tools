@@ -19,7 +19,17 @@ Connect via SSH to your server and run the command:
 composer global require farkhulin/iqis_tools
 
 ```
-After installation, log out of the SSH for the changes to take effect, and log in again. Next, go to the directory with your project and run:
+Next run the commands:
+
+```bash
+
+chmod ugo+x  ~/.composer/vendor/farkhulin/iqis_tools/iqis.sh
+
+~/.composer/vendor/farkhulin/iqis_tools/iqis.sh -a selfinit
+
+```
+
+After that, log out of the SSH for the changes to take effect, and log in again. Next, go to the directory with your project and run:
 
 ```bash
 
