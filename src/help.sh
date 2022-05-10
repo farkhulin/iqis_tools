@@ -7,7 +7,7 @@ help() {
     echo
     echo -e "                             ${WHITE}${TOOLS_NAME}${NC} version: ${VERSION}"
     echo
-    echo -e "This utility is intended for Drupal 7,8(or higher) developers to simplify"
+    echo -e "This utility is intended for Drupal 7,8 (or higher) developers to simplify"
     echo -e "everyday tasks, such as creating / restoring file system and database backups,"
     echo -e "with the ability to configure folder exclusions"
     echo -e "and / or table exclusions in the database."
@@ -19,7 +19,7 @@ help() {
     echo -e "Site:   https://iqis.ru"
     echo -e "Email:  marat.farkhulin@gmail.com"
     echo
-    echo -e "${WHITE}Syntax:${NC} iqis action_name"
+    echo -e "${WHITE}Syntax:${NC} iqis action-name"
     echo
     echo -e "${NC}Avalibale actions:"
     echo

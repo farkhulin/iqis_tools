@@ -13,11 +13,11 @@ create_config() {
 
     if [[ ${confirmation} == '' ]] ; then
         echo
-        echo -e "\n_iqis.conf file is not created.\n"
+        error_message "_iqis.conf file is not created.\n"
     else
         if [ ${confirmation} = "no" ] ; then
             echo
-            echo -e "\n_iqis.conf file is not created.\n"
+            error_message "_iqis.conf file is not created.\n" "MNS"
         elif [ ${confirmation} = "yes" ] ; then
             echo -ne "${TS}${WAITING_MESSAGE}\r"
             touch _iqis.conf

@@ -1,6 +1,6 @@
 # IQIS TOOLS
 
-**iqis** - This utility is intended for Drupal 7,8(or higher) developers to simplify everyday tasks, such as creating / restoring file system and database backups, with the ability to configure folder exclusions and / or table exclusions in the database.
+**iqis** - This utility is intended for Drupal 7,8 (or higher) developers to simplify everyday tasks, such as creating / restoring file system and database backups, with the ability to configure folder exclusions and / or table exclusions in the database.
 
 For DB dump operations used https://github.com/ifsnop/mysqldump-php library.
 
@@ -15,26 +15,18 @@ For DB dump operations used https://github.com/ifsnop/mysqldump-php library.
 Connect via SSH to your server and run the command:
 
 ```bash
-
 composer global require farkhulin/iqis_tools
-
 ```
-Next run the commands:
+Next run the command:
 
 ```bash
-
-chmod ugo+x  ~/.composer/vendor/farkhulin/iqis_tools/iqis.sh
-
-~/.composer/vendor/farkhulin/iqis_tools/iqis.sh -a selfinit
-
+chmod ugo+x  ~/.composer/vendor/farkhulin/iqis_tools/iqis.sh && ~/.composer/vendor/farkhulin/iqis_tools/iqis.sh -a selfinit
 ```
 
 After that, log out of the SSH for the changes to take effect, and log in again. Next, go to the directory with your project and run:
 
 ```bash
-
 iqis
-
 ```
 
 ## CUSTOMISATION
@@ -43,16 +35,13 @@ If you want set custom project name and backup suffix create **_iqis.conf** file
 
 ```bash
 # _iqis.conf
-
 # * CUSTOM VARIABLES
 PROJECT="your_project_name"
 BCKP_SUFFIX="backup"
 CUSTOM_BCKP_SUFFIX="custom_backup"
-
-# use absolute path example DRUPAL_PATH="/var/www/home/your-site.com/web/"
+# use absolute path example: DRUPAL_PATH="/var/www/home/your-site.com/web/"
 DRUPAL_PATH="./"
-
-# use absolute path example SCRIPT_PATH="/var/www/home/your-site.com/"
+# use absolute path example: SCRIPT_PATH="/var/www/home/your-site.com/"
 SCRIPT_PATH="./"
 # * EXCLUDED PATHS AND FILES
 EXCLUDED_PATHS=(

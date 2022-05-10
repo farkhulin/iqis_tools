@@ -38,8 +38,19 @@ success_message() {
 }
 
 # Function: Error message.
+# param 1 ($1) - custom text.
+# param 2 ($2) - custom icon code (PLS, MNS).
 error_message() {
-    echo -e "${TS}${ERR} ERROR"
+    if [ $# -eq 0 ] ; then
+        echo -e "${TS}${ERR} ERROR"
+    else
+        if [ "$2" = "MNS" ] ; then
+            MESSAGE_ICON=${MNS}
+        else
+            MESSAGE_ICON=${ERR}
+        fi
+        echo -e "${TS}${MESSAGE_ICON} $1"
+    fi
 }
 
 # Function: Nfsk complite message.
@@ -49,8 +60,9 @@ tasks_complite() {
 
 # Function: No Drupal message.
 no_drupal_message() {
-    echo -e "${WHITE}`pwd` - ${RED}this directory does not contain drupal.${NC}"
-    echo -e "No database and file archives were created."
+    echo
+    echo -e "${TS}${ERR} `pwd` - ${RED}this directory does not contain Drupal.${NC}"
+    echo
 }
 
 # Function: Restore complite message.

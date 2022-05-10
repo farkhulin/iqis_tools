@@ -1,13 +1,5 @@
 #!/bin/bash
 
-# * TEXT
-WAITING_MESSAGE='In progress...'
-TS='    '
-SCS='[\xE2\x9C\x94]'
-ERR='[x]'
-PLS='[+]'
-MNS='[-]'
-
 # * STYLES
 RED='\033[1;31m'
 WHITE='\033[1;37m'
@@ -19,3 +11,11 @@ NC='\033[0m'
 BOLD='\033[1m'
 BLINK='\033[5m'
 INVERSION='\033[7m'
+
+# * TEXT
+WAITING_MESSAGE='In progress...'
+TS='    '
+SCS='[\xE2\x9C\x94]'
+ERR='['${RED}'x'${NC}']'
+PLS='[+]'
+MNS='[-]'

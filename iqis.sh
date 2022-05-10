@@ -23,7 +23,7 @@
 # * DONE Add SILENT mode for /db/services.php clear_cache
 
 # * VARIABLES
-VERSION="0.2.6"
+VERSION="0.2.7"
 TOOLS_NAME="IQIS TOOLS"
 CURRENT=`pwd`
 PROJECT=`basename "$CURRENT"`

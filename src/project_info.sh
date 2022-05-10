@@ -68,11 +68,8 @@ project_info() {
         echo -e ${WHITE}"ROOT ADMIN INFO:"${NC}
 
         php $(dirname "$0")/db/users.php -- 'DB_NAME='${DB_NAME}'&DB_USER='${DB_USER}'&DB_PASS='${DB_PASS}'&DB_HOST='${DB_HOST}'&ACTION=admin_info&DRUPAL_LEGACY='${DRUPAL_LEGACY}
+        separator
     else
-        echo
-        echo -e ${RED}" Drupal was not found in this directory: ${WHITE}${CURRENT}"${NC}
-        echo
+        no_drupal_message
     fi
-    separator
-    echo
 }
